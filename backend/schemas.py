@@ -1,12 +1,15 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class UserCreate(BaseModel):
-    email: str
+    email: EmailStr
     password: str
+
+    class Config:
+        from_attributes = True
 
 class UserOut(BaseModel):
     id: int
-    email: str
+    email: EmailStr
 
     class Config:
-        orm_mode = True
+        from_attributes = True

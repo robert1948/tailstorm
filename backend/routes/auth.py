@@ -10,7 +10,7 @@ router = APIRouter()
 # JWT config
 SECRET_KEY = "super-secret-key"  # Replace with env var in production
 ALGORITHM = "HS256"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 # Dependency to get DB session
@@ -35,8 +35,8 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return db_user
 
 
-@router.post("/login")
-def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
+@router.post("/token")
+def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if not db_user or not auth.verify_password(user.password, db_user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
