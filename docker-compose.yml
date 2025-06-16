@@ -23,9 +23,8 @@ services:
       - '8000:8000'
     depends_on:
       - db
-    environment:
-      - DATABASE_URL=postgresql://postgres:stinkie@db:5432/capecontrol
-      - SECRET_KEY=super-secret-key
+    env_file:
+      - ./backend/.env
 
 volumes:
   postgres_data:

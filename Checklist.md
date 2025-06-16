@@ -1,77 +1,91 @@
-# 📋 CapeControl Development Checklist
+# ✅ CapeControl Development Checklist — V2
 
-## ✅ Backend
-
-- [x] Setup FastAPI app with CORS middleware
-- [x] Create `/register` and `/login` routes
-- [x] Add password hashing and token creation
-- [x] Implement `/me` protected route
-- [ ] Move all backend code into `backend/app/` for clarity and maintainability
-- [ ] Organize route files under `backend/app/routes/` and include routers modularly in `main.py`
-- [ ] Ensure all backend imports use `from app ...` instead of `from backend ...`
-- [ ] Use environment variables for sensitive data (e.g., database URLs) in backend
-- [ ] Add a `get_db` dependency for database sessions in FastAPI
-- [ ] Add role-based access control
-- [ ] Add error logging to all routes
-- [ ] Add docstrings and comments to all models, schemas, and complex logic
-- [ ] Use `from_attributes = True` in Pydantic schema `Config` for ORM mode
-- [ ] Move utility scripts to the `scripts/` directory
-- [ ] Ensure Docker and Compose files are at the project root and updated for new structure
-
-## ✅ Frontend (React + Tailwind)
-
-- [x] Setup Vite + Tailwind project
-- [x] Create `Login` and `Register` forms
-- [ ] Hook login form to backend
-- [ ] Store token in localStorage
-- [ ] Create Dashboard with `/me` fetch
-- [ ] Centralize error handling in hooks and API utilities
-- [ ] Refactor long functions into smaller, modular pieces
-- [ ] Extract reusable logic (like data fetching) into custom hooks with JSDoc comments
-- [ ] Use functional components and hooks in React code
-- [ ] Use `useMemo` and `useCallback` for performance optimization in React
-- [ ] Use PropTypes or TypeScript for type checking in React components
-- [ ] Add and configure ESLint with a custom config to enforce:
-    - camelCase for variables and functions
-    - single quotes for string literals
-    - 2-space indentation
-- [ ] Add Prettier for consistent code formatting
-- [ ] Add an `ignores` property in `eslint.config.js` to exclude `dist/`, `build/`, and config files from linting
-- [ ] Remove `.eslintignore` file if present
-- [ ] Use BEM naming convention and CSS variables in styles
-- [ ] Keep styles modular and avoid global styles
-- [ ] Use Flexbox or Grid for layout in CSS
-- [ ] Add unit tests for custom hooks and utility functions
-- [ ] Use modern JavaScript/TypeScript syntax and best practices throughout the codebase
-
-## ✅ DevOps
-
-- [x] Setup Dockerfile for backend
-- [x] Create docker-compose.yml with Postgres
-- [ ] Add `.env` file for secrets
-- [ ] Setup GitHub Actions for CI
+This version expands direction for production readiness, clean coding practices, and deployment.
 
 ---
 
-### ⏳ In Progress
-- Hooking login form to backend
-- Testing /me route with JWT
+## 🔧 Backend (FastAPI)
+
+### ✅ Auth & Routes
+- [x] Register & login with JWT
+- [x] `/me` protected route
+- [x] `/logout` (JWT deletion client-side)
+- [ ] `/refresh` token support (optional)
+- [x] Move route logic into `app/routes/`
+- [x] Move dependencies into `dependencies.py`
+
+### ✅ Configuration
+- [x] Use `dotenv` and `.env`
+- [x] Create `app/config.py` with `Settings` class
+- [x] Access all settings from `settings.` import
+- [x] Environment override support (`CORS_ORIGIN=*`)
+
+### ✅ Database
+- [x] PostgreSQL container in `docker-compose.yml`
+- [x] Use `SessionLocal` via `get_db()` dependency
+- [ ] Add Alembic for migrations
+- [ ] Add seed script for test users
+- [ ] Add SQLAlchemy relationship support
 
 ---
 
-**Note:**  
-- Always use camelCase for variables and functions.  
-- Indent with two spaces.  
-- Use single quotes for all string literals.  
-- Add comments for functions and any complex logic.  
-- Break long functions into smaller, modular pieces.  
-- Remove redundant code and use modern JavaScript syntax (e.g., arrow functions, destructuring).  
-- Extract reusable logic (like data fetching) into custom hooks.  
-- Use functional components and hooks in React.  
-- Use PropTypes or TypeScript for type checking.  
-- Use BEM naming convention and CSS variables in styles.  
-- Keep styles modular and avoid global styles.  
-- Use Flexbox or Grid for layout in CSS.  
-- Add unit tests for custom hooks and utility functions.  
-- Centralize error handling in hooks and API utilities.  
-- Use modern JavaScript/TypeScript syntax and best practices throughout the codebase.  
+## 🧠 Frontend (React + Vite + Tailwind)
+
+### ✅ Auth Flow
+- [x] Login / Register / Logout
+- [x] AuthContext for token & user state
+- [x] ProtectedRoute component
+- [x] Redirect on login success
+- [x] Show email in navbar
+- [ ] Refresh token on page reload (optional)
+
+### ✅ UI / UX
+- [x] Responsive Navbar with auth-aware links
+- [x] Form validation + error display
+- [x] Code-splitting via lazy loading
+- [x] Loading spinner on route guards
+- [ ] Add toast notifications for success/errors
+
+### ✅ Code Style
+- [x] ESLint + Prettier configured
+- [x] Component and layout separation
+- [ ] Convert core files to `.tsx` or add PropTypes
+
+---
+
+## 📦 DevOps & Deployment
+
+### ✅ Local Dev
+- [x] Dockerized backend + PostgreSQL
+- [x] React runs via Vite on port 5173
+- [x] Local `.env` for secrets
+- [x] Swagger UI on `/docs`
+
+### 🛰️ Deployment (Heroku/Render)
+- [ ] Set environment variables
+- [ ] Attach Heroku Postgres
+- [ ] `Procfile` for FastAPI
+- [ ] Enable automatic GitHub deploys
+- [ ] Set CORS/FRONTEND_ORIGIN envs
+
+---
+
+## 🧪 Testing & CI
+
+- [ ] Add `tests/` folder with `pytest`
+- [ ] Add `prestart.sh` script for DB checks
+- [ ] GitHub Actions workflow for CI:
+    - Install
+    - Lint
+    - Test backend
+- [ ] Optionally test React with Vitest or Jest
+
+---
+
+## 🔮 Future (Optional Ideas)
+
+- [ ] Add admin role + access control
+- [ ] Add multi-user organization support
+- [ ] Rate limiting with FastAPI middleware
+- [ ] Connect Stripe or PayPal
+- [ ] AI onboarding assistant

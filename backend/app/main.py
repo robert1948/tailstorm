@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import auth  # Updated import to match new structure
+from app.routes import auth
+from app.config import settings
 
-app = FastAPI()
+app = FastAPI(title=settings.PROJECT_NAME)
 
-# CORS configuration for local frontend development
+# CORS middleware setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Use environment/config for production
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -18,7 +19,7 @@ def read_root():
     """
     Health check endpoint for the API.
     """
-    return {"message": "CapeControl API running."}
+    return {"message": f"{settings.PROJECT_NAME} API running."}
 
-# Include authentication routes
+# Register routes
 app.include_router(auth.router)
