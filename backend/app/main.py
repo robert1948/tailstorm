@@ -20,4 +20,5 @@ def read_root():
     """
     return {"message": "CapeControl API running."}
 
-# Include authentication
+# Include authentication routes
+app.include_router(auth.router)

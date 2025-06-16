@@ -1,23 +1,35 @@
-import { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import { getCurrentUser } from '../api/user';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { user, setUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/login', {
+      const res = await fetch('http://127.0.0.1:8000/token', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify({ email, password }),
+        body: new URLSearchParams({
+          username: email,
+          password: password,
+        }),
       });
 
       const data = await res.json();
@@ -27,7 +39,9 @@ export default function Login() {
       }
 
       localStorage.setItem('token', data.access_token);
-      navigate('/dashboard');
+      const user = await getCurrentUser();
+      setUser(user);
+      navigate('/');
     } catch (err) {
       setError(err.message);
     }

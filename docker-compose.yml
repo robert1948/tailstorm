@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: stinkie
       POSTGRES_DB: capecontrol
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -17,15 +17,15 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - .:/app
+      - ./backend:/app
     ports:
-      - "8000:8000"
+      - '8000:8000'
     depends_on:
       - db
     environment:
       - DATABASE_URL=postgresql://postgres:stinkie@db:5432/capecontrol
+      - SECRET_KEY=super-secret-key
 
 volumes:
   postgres_data:
