@@ -1,21 +1,39 @@
 from pydantic import BaseModel, EmailStr
 
+# ----------------------------
+# Schema: User Registration
+# ----------------------------
 class UserCreate(BaseModel):
     """
     Schema for creating a new user.
     """
-    email: EmailStr  # User's email address
-    password: str    # User's plain password
+    email: EmailStr
+    password: str
 
     class Config:
-        from_attributes: bool = True  # Enable ORM mode for Pydantic v2
+        from_attributes = True
 
+
+# ----------------------------
+# Schema: User Login (JSON input)
+# ----------------------------
+class LoginInput(BaseModel):
+    """
+    Schema for user login via JSON.
+    """
+    email: EmailStr
+    password: str
+
+
+# ----------------------------
+# Schema: Public User Info (safe output)
+# ----------------------------
 class UserOut(BaseModel):
     """
     Schema for returning user information (excluding sensitive data).
     """
-    id: int          # User's unique ID
-    email: EmailStr  # User's email address
+    id: int
+    email: EmailStr
 
     class Config:
-        from_attributes: bool = True  # Enable ORM mode for Pydantic v2
+        from_attributes = True

@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { getCurrentUser } from '../api/user';
 
+/**
+ * Login component for user authentication.
+ * Redirects to dashboard if already authenticated.
+ */
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,61 +16,65 @@ export default function Login() {
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate('/dashboard'); // Redirect if user is already logged in
     }
   }, [user, navigate]);
 
+  /**
+   * Handle form submission and login via backend
+   * @param {React.FormEvent} e
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/token', {
+      const response = await fetch('http://localhost:8000/auth/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
-        body: new URLSearchParams({
-          username: email,
-          password: password,
-        }),
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (!res.ok) {
+      if (!response.ok) {
         throw new Error(data.detail || 'Login failed');
       }
 
       localStorage.setItem('token', data.access_token);
-      const user = await getCurrentUser();
-      setUser(user);
-      navigate('/');
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+      navigate('/dashboard');
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Unexpected login error');
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-80 space-y-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded shadow-md w-80 space-y-4"
+      >
         <h2 className="text-2xl font-semibold text-center">Login</h2>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <input
           type="email"
           placeholder="Email"
-          className="w-full px-3 py-2 border rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          className="w-full px-3 py-2 border rounded"
         />
         <input
           type="password"
           placeholder="Password"
-          className="w-full px-3 py-2 border rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          className="w-full px-3 py-2 border rounded"
         />
         <button
           type="submit"

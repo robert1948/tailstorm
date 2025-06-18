@@ -1,33 +1,34 @@
-import React, { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { getCurrentUser } from '../api/user';
+import { getToken } from '../utils/token';
 
 export const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(undefined); // 'undefined' means "checking"
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      getCurrentUser()
-        .then(setUser)
-        .catch(() => {
-          localStorage.removeItem('token');
+    const initializeUser = async () => {
+      const token = getToken();
+      if (token) {
+        try {
+          const currentUser = await getCurrentUser();
+          setUser(currentUser);
+        } catch (err) {
+          console.warn('Auto-login failed:', err.message);
           setUser(null);
-        });
-    } else {
-      setUser(null);
-    }
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeUser();
   }, []);
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-  };
-
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
-      {children}
+    <AuthContext.Provider value={{ user, setUser }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
-}
+};

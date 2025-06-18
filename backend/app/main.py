@@ -2,10 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+import os
 
 from app.routes import auth
 from app.config import settings
-import os
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
@@ -27,13 +27,13 @@ app.mount("/static", StaticFiles(directory=static_path), name="static")
 def read_root():
     return {"message": f"{settings.PROJECT_NAME} API running."}
 
-# React frontend fallback (serves index.html for client-side routing)
-@app.get("/{full_path:path}")
+# Register API routes
+app.include_router(auth.router)
+
+# React frontend fallback (serves index.html for client-side routes)
+@app.get("/{full_path:path}", include_in_schema=False)
 async def serve_react_app(full_path: str):
     index_file_path = os.path.join(static_path, "index.html")
     if os.path.exists(index_file_path):
         return FileResponse(index_file_path)
     return {"error": "Frontend not built or index.html missing"}
-
-# Register routes
-app.include_router(auth.router)
