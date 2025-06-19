@@ -1,6 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import { Suspense, lazy } from 'react';
+import Landing from './pages/Landing';
+
+
+
 
 // Lazy-loaded components
 const Login = lazy(() => import('./pages/Login'));
@@ -23,6 +27,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/logout" element={<Logout />} />
