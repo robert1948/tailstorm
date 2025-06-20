@@ -1,19 +1,16 @@
 import os
-from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
 
-load_dotenv()
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "CapeControl"
 
-class Settings:
-    PROJECT_NAME = "CapeControl"
-    FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
-    CORS_ORIGIN = os.getenv("CORS_ORIGIN")
-    SECRET_KEY = os.getenv("SECRET_KEY", "changeme")
-    DATABASE_URL = os.getenv("DATABASE_URL")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./test.db")
 
     @property
-    def cors_origins(self):
-        if self.CORS_ORIGIN == "*":
-            return ["*"]
-        return [self.FRONTEND_ORIGIN]
+    def db_url(self):
+        # Heroku provides 'postgres://...' which SQLAlchemy doesn't like
+        return self.DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+    cors_origins: list[str] = ["*"]  # Update with actual CORS if needed
 
 settings = Settings()

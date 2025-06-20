@@ -9,7 +9,7 @@ from app.config import settings
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
-# CORS middleware setup
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -18,27 +18,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve static files from the built React app
+# Serve static files (React build output)
 static_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "static"))
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
-# Health check endpoint
+# Path to index.html (used in both root and fallback)
+index_html = os.path.join(static_path, "index.html")
+
+# Health check or serve React root
 @app.get("/", include_in_schema=False)
-def health_check():
-    # Attempt to serve index.html as landing
-    index_file_path = os.path.join(static_path, "index.html")
-    if os.path.exists(index_file_path):
-        return FileResponse(index_file_path)
+def serve_landing():
+    if os.path.exists(index_html):
+        return FileResponse(index_html)
     return {"message": f"{settings.PROJECT_NAME} API running."}
 
-# Register backend routes
+# API routes
 app.include_router(auth.router, prefix="/auth")
 
-# Fallback for React SPA routing
+# Catch-all fallback to React SPA
 @app.get("/{full_path:path}", include_in_schema=False)
-async def serve_react_app(full_path: str):
-    index_file_path = os.path.join(static_path, "index.html")
-    if os.path.exists(index_file_path):
-        return FileResponse(index_file_path)
+async def spa_fallback(full_path: str):
+    if os.path.exists(index_html):
+        return FileResponse(index_html)
     return {"error": "Frontend not built or index.html missing"}
-# Fixed 06.36

@@ -1,9 +1,10 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-import os
 
-# Get the database URL from environment variables for security
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:stinkie@localhost:5432/capecontrol')
+# Patch Heroku DATABASE_URL if needed
+raw_db_url = os.getenv('DATABASE_URL', 'postgresql://postgres:stinkie@localhost:5432/capecontrol')
+DATABASE_URL = raw_db_url.replace("postgres://", "postgresql://", 1)
 
 # Create the SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
