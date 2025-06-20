@@ -27,7 +27,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Ensure static folder exists
 RUN mkdir -p backend/app/static
 
-# ✅ Correct path: copy from /app/client/dist not /app/dist
+# ✅ Correct path: copy built frontend assets
 COPY --from=frontend /app/dist/index.html ./backend/app/static/index.html
 COPY --from=frontend /app/dist/assets ./backend/app/static/assets
 
@@ -38,5 +38,5 @@ RUN ls -l ./backend/app/static/index.html || echo "⚠️ index.html not found"
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app/backend
 
-# Start FastAPI server
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# ✅ Start FastAPI server with shell form to expand $PORT for Heroku
+CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT
