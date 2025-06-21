@@ -1,20 +1,20 @@
 export async function getCurrentUser() {
   const token = localStorage.getItem('token');
-
   if (!token) {
     throw new Error('No token found');
   }
 
-  const res = await fetch('http://127.0.0.1:8000/me', {
+  const res = await fetch('/api/auth/me', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
+  const data = await res.json(); // call only once
+
   if (!res.ok) {
-    const data = await res.json();
     throw new Error(data.detail || 'Failed to fetch user');
   }
 
-  return res.json();
+  return data;
 }

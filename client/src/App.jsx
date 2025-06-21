@@ -3,10 +3,7 @@ import Navbar from './components/Navbar';
 import { Suspense, lazy } from 'react';
 import Landing from './pages/Landing';
 
-
-
-
-// Lazy-loaded components
+// Lazy-loaded pages
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -19,18 +16,18 @@ export default function App() {
       <Navbar />
       <Suspense fallback={<div className="p-4 text-center">Loading...</div>}>
         <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/logout" element={<Logout />} />
           <Route
-            path="/"
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/logout" element={<Logout />} />
         </Routes>
       </Suspense>
     </div>

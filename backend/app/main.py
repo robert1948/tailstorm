@@ -18,28 +18,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Static directory
-static_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "static"))
+# Define path to React build (typically /client/dist)
+static_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../client/dist"))
 index_html = os.path.join(static_path, "index.html")
 
-# Mount static files (for /static/assets/...)
+# Mount static assets (like JS, CSS, images)
 app.mount("/static", StaticFiles(directory=static_path), name="static")
-
-# Health check or root index.html
-@app.get("/", include_in_schema=False)
-def serve_root():
-    if os.path.exists(index_html):
-        return FileResponse(index_html)
-    return {"message": f"{settings.PROJECT_NAME} API running."}
 
 # API endpoints
 app.include_router(auth.router, prefix="/auth")
 
-# Catch-all for React SPA (only non-static, non-file paths)
+# Serve index.html at root
+@app.get("/", include_in_schema=False)
+def serve_landing():
+    if os.path.exists(index_html):
+        return FileResponse(index_html)
+    return {"message": f"{settings.PROJECT_NAME} frontend not built."}
+
+# Catch-all fallback for SPA routes (non-API, non-static, non-assets)
 @app.get("/{full_path:path}", include_in_schema=False)
 async def spa_fallback(full_path: str, request: Request):
     if full_path.startswith("static/") or "." in full_path:
-        return {"error": f"Path not found: /{full_path}"}
+        return {"error": f"File not found: /{full_path}"}
     if os.path.exists(index_html):
         return FileResponse(index_html)
     return {"error": "Frontend not built or index.html missing"}

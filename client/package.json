@@ -3,12 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
+"scripts": {
+  "dev": "vite",
+  "build": "vite build && npm run copy",
+  "copy": "mkdir -p ../backend/app/static && rm -rf ../backend/app/static/* && cp -r dist/* ../backend/app/static/",
+  "lint": "eslint .",
+  "preview": "vite preview"
+},
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
