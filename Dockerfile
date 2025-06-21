@@ -1,42 +1,43 @@
 # 1️⃣ Frontend build stage
 FROM node:20 AS frontend
 
-# Set working directory
 WORKDIR /app
 
-# Copy React app source
+# Copy only client files
 COPY client/ .
 
 # Install dependencies and build
 RUN npm install && npm run build
 
-# 2️⃣ Backend + Serve frontend
+# 2️⃣ Backend stage
 FROM python:3.11-slim AS backend
 
-# Install OS-level build tools
+# Install required system dependencies
 RUN apt-get update && apt-get install -y build-essential && apt-get clean
 
-# Backend workdir
+# Create working directory
 WORKDIR /app
 
-# Copy backend and install Python dependencies
+# Copy backend code and dependencies
 COPY backend/ ./backend
 COPY requirements.txt .
+
+# Install Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Ensure static folder exists
+# Ensure static directory exists
 RUN mkdir -p backend/app/static
 
-# ✅ Correct path: copy built frontend assets
-COPY --from=frontend /app/dist/index.html ./backend/app/static/index.html
-COPY --from=frontend /app/dist/assets ./backend/app/static/assets
+# ✅ Copy built frontend from previous stage
+COPY --from=frontend /app/dist ./backend/app/static
 
-# Optional: sanity check
-RUN ls -l ./backend/app/static/index.html || echo "⚠️ index.html not found"
+# Optional: validate that files copied correctly
+RUN ls -l ./backend/app/static/index.html || echo "⚠️ index.html missing"
+RUN ls -l ./backend/app/static/assets || echo "⚠️ assets folder missing"
 
-# Set environment variables
+# Set environment
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app/backend
 
-# ✅ Start FastAPI server with shell form to expand $PORT for Heroku
-CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT
+# ✅ Start FastAPI server using Heroku-compatible $PORT
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "$PORT"]
