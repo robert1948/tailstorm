@@ -1,0 +1,1 @@
+import{r,A as s,j as e,N as n}from"./index-DQUQMXv2.js";function i({children:o}){const{user:t}=r.useContext(s);return t===void 0?e.jsx("div",{className:"p-4 text-center",children:"Checking authentication..."}):t?o:e.jsx(n,{to:"/login"})}export{i as default};

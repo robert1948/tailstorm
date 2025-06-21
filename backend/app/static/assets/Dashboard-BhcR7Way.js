@@ -1,1 +1,0 @@
-import{j as e}from"./index-Bakrd4rs.js";function s(){return e.jsxs("div",{className:"p-8 text-center",children:[e.jsx("h1",{className:"text-2xl font-bold mb-4",children:"Dashboard"}),e.jsx("p",{className:"text-gray-600",children:"Welcome to your CapeControl dashboard."})]})}export{s as default};

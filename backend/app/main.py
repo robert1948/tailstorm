@@ -19,8 +19,9 @@ app.add_middleware(
 )
 
 # Define path to React build (typically /client/dist)
-static_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../client/dist"))
+static_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "static"))
 index_html = os.path.join(static_path, "index.html")
+
 
 # Mount static assets (like JS, CSS, images)
 app.mount("/static", StaticFiles(directory=static_path), name="static")
@@ -37,7 +38,7 @@ def serve_landing():
 
 # Catch-all fallback for SPA routes (non-API, non-static, non-assets)
 @app.get("/{full_path:path}", include_in_schema=False)
-async def spa_fallback(full_path: str, request: Request):
+async def spa_fallback(full_path: str):
     if full_path.startswith("static/") or "." in full_path:
         return {"error": f"File not found: /{full_path}"}
     if os.path.exists(index_html):

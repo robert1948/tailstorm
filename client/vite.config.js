@@ -8,7 +8,7 @@ export default defineConfig({
     outDir: 'dist',           // Output folder for production
     emptyOutDir: true,
   },
-  base: '/',                  // ✅ Important for correct path resolution in production
+  base: '/static/',                  // ✅ Important for correct path resolution in production
 
   // ✅ Add this block for local dev API proxying
   server: {
