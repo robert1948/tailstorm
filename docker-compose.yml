@@ -6,15 +6,16 @@ services:
       context: .
       dockerfile: .devcontainer/Dockerfile
     volumes:
-      - .:/workspace:cached
+      - ../workspace:cached
     command: /bin/bash
     depends_on:
       - db
     ports:
-      - "8000:8000"
-      - "3000:3000"
+      - "8000:8000"  # backend FastAPI
+      - "3001:3000"  # 👈 expose frontend container on host:3001 to avoid conflict
     environment:
       SECRET_KEY: "changeme-in-prod"
+
   db:
     image: postgres:15
     restart: always
