@@ -7,20 +7,35 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
 *.local
 
+# Optional runtime data
+*.pid
+*.seed
+*.pid.lock
+
 # Editor directories and files
-.vscode/*
+.vscode/
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-# Ignore env secrets
-backend/.env
+
+# Environment variable files
+.env
+.env.*           # Catch .env.development, .env.production, etc.
+backend/.env     # Explicitly ignore backend secrets
+
+# Docker & VS Code
+docker-compose.override.yml
+.vscode/settings.json

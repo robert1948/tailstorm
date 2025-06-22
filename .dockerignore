@@ -1,10 +1,28 @@
-node_modules
-dist
+# Node dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Environment files
 .env
-.git
-.vscode
-.idea
+.env.*         # Include any other env variants like .env.local, etc.
+
+# Git and editor configs
+.git/
+.vscode/
+.idea/
+
+# OS and log files
 .DS_Store
-npm-debug.log
-yarn-error.log
-# Ignore build artifacts
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Docker-specific overrides
+docker-compose.override.yml
+
+# Ignore build artifacts (comment clarification)
+*.log

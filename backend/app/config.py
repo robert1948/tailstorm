@@ -1,34 +1,27 @@
-# backend/app/config.py
-import os
-from pathlib import Path
-from dotenv import load_dotenv
-from pydantic_settings import BaseSettings
+from pydantic import BaseSettings, Field, validator
+from typing import List
 
-# ✅ Path to backend/.env regardless of where uvicorn is run from
-env_path = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(dotenv_path=env_path)
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "CapeControl"
-    SECRET_KEY: str
-    ENV: str = "production"
-    DEBUG: bool = False
-    ALLOWED_HOSTS: list[str] = ["localhost"]
-    cors_origins: list[str] = ["http://localhost:3000"]
+    postgres_db: str = Field(..., env="POSTGRES_DB")
+    postgres_user: str = Field(..., env="POSTGRES_USER")
+    postgres_password: str = Field(..., env="POSTGRES_PASSWORD")
+    secret_key: str = Field(..., env="SECRET_KEY")
+    env: str = Field("development", env="ENV")
+    debug: bool = Field(True, env="DEBUG")
+    allowed_hosts: List[str] = Field(default_factory=list, env="ALLOWED_HOSTS")
+    api_url: str = Field(..., env="API_URL")
+    database_url: str = Field(..., env="DATABASE_URL")
+
+    @validator("allowed_hosts", pre=True)
+    def split_allowed_hosts(cls, v):
+        if isinstance(v, str):
+            return [host.strip() for host in v.split(",")]
+        return v
 
     class Config:
-        case_sensitive = True
+        env_file = ".env"
+        case_sensitive = False
 
-    # Validator to support comma-separated ALLOWED_HOSTS in .env
-    @classmethod
-    def validate_allowed_hosts(cls, value):
-        if isinstance(value, str):
-            return [host.strip() for host in value.split(",") if host.strip()]
-        return value
-
-    def __init__(self, **values):
-        if 'ALLOWED_HOSTS' in values:
-            values['ALLOWED_HOSTS'] = self.validate_allowed_hosts(values['ALLOWED_HOSTS'])
-        super().__init__(**values)
 
 settings = Settings()
