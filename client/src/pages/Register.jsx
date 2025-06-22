@@ -1,99 +1,69 @@
-import { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import { getCurrentUser } from '../api/user';
+import { useState } from "react";
+import MainLayout from "../components/layout/MainLayout";
 
-/**
- * Register component for new user sign-up.
- * Redirects to dashboard if already authenticated.
- */
 export default function Register() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
-  const { user, setUser } = useContext(AuthContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  useEffect(() => {
-    if (user) {
-      navigate('/dashboard'); // Redirect if already logged in
-    }
-  }, [user, navigate]);
-
-  /**
-   * Handles form submission to register the user.
-   * Also logs in the user after successful registration.
-   * @param {React.FormEvent} e
-   */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
+    setSuccess("");
 
     try {
-      const response = await fetch('http://localhost:8000/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Registration failed');
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail || "Registration failed");
       }
 
-      // Optional: Auto-login after registration
-      const loginRes = await fetch('http://localhost:8000/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const loginData = await loginRes.json();
-      if (!loginRes.ok) throw new Error(loginData.detail || 'Auto-login failed');
-
-      localStorage.setItem('token', loginData.access_token);
-      const currentUser = await getCurrentUser();
-      setUser(currentUser);
-      navigate('/dashboard');
+      setSuccess("Registration successful! Redirecting to login...");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
     } catch (err) {
-      setError(err.message || 'Unexpected registration error');
+      setError(err.message);
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow-md w-80 space-y-4"
-      >
-        <h2 className="text-2xl font-semibold text-center">Register</h2>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full px-3 py-2 border rounded"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full px-3 py-2 border rounded"
-        />
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-        >
-          Sign Up
-        </button>
-      </form>
-    </div>
+    <MainLayout>
+      <div className="max-w-md mx-auto mt-12 bg-white p-6 rounded-lg shadow">
+        <h2 className="text-xl font-semibold mb-4 text-center">Register</h2>
+
+        {error && <p className="text-red-600 text-sm mb-4 text-center">{error}</p>}
+        {success && <p className="text-green-600 text-sm mb-4 text-center">{success}</p>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-2 border rounded"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-2 border rounded"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+          >
+            Register
+          </button>
+        </form>
+      </div>
+    </MainLayout>
   );
 }

@@ -1,77 +1,65 @@
-import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { useState } from "react";
+import MainLayout from "../components/layout/MainLayout";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const { setUser } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Login failed');
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail || "Login failed");
       }
 
-      const data = await response.json();
-      localStorage.setItem('token', data.access_token);
-      setUser(data.user); // optional, if your backend returns user object
-
-      navigate('/dashboard');
+      const data = await res.json();
+      localStorage.setItem("token", data.access_token);
+      window.location.href = "/dashboard";
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow max-w-md w-full">
-        <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Login to CapeControl</h2>
+    <MainLayout>
+      <div className="max-w-md mx-auto mt-12 bg-white p-6 rounded-lg shadow">
+        <h2 className="text-xl font-semibold mb-4 text-center">Login</h2>
 
-        {error && <p className="text-red-600 mb-4 text-sm">{error}</p>}
+        {error && <p className="text-red-600 text-sm mb-4 text-center">{error}</p>}
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
+            placeholder="Email"
+            className="w-full p-2 border rounded"
             value={email}
-            onChange={e => setEmail(e.target.value)}
-            className="mt-1 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            onChange={(e) => setEmail(e.target.value)}
           />
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700">Password</label>
           <input
             type="password"
+            placeholder="Password"
+            className="w-full p-2 border rounded"
             value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="mt-1 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            onChange={(e) => setPassword(e.target.value)}
           />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition"
-        >
-          Login
-        </button>
-      </form>
-    </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    </MainLayout>
   );
 }
