@@ -8,12 +8,13 @@ class Settings(BaseSettings):
     postgres_user: str = Field(..., alias="POSTGRES_USER")
     postgres_password: str = Field(..., alias="POSTGRES_PASSWORD")
     secret_key: str = Field(..., alias="SECRET_KEY")
-    env: str = Field("development", alias="ENV")
-    debug: bool = Field(True, alias="DEBUG")
+    env: str = Field(default="development", alias="ENV")
+    debug: bool = Field(default=True, alias="DEBUG")
     allowed_hosts: List[str] = Field(default_factory=list, alias="ALLOWED_HOSTS")
     api_url: str = Field(..., alias="API_URL")
     database_url: str = Field(..., alias="DATABASE_URL")
 
+    # ✅ Allows comma-separated ALLOWED_HOSTS string from Heroku/Env
     @field_validator("allowed_hosts", mode="before")
     @classmethod
     def split_allowed_hosts(cls, v):
@@ -22,9 +23,10 @@ class Settings(BaseSettings):
         return v
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        case_sensitive=False
+        env_file=".env",         # ✅ fallback for local development
+        case_sensitive=False     # ✅ flexible for env var casing
     )
 
 
+# ✅ Create the singleton instance
 settings = Settings()

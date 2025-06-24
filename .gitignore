@@ -39,3 +39,4 @@ backend/.env     # Explicitly ignore backend secrets
 # Docker & VS Code
 docker-compose.override.yml
 .vscode/settings.json
+backend/.venv/
