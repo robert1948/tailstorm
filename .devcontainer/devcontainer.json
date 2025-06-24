@@ -1,15 +1,15 @@
 {
   "name": "CapeControl Dev Container",
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "../Dockerfile"
   },
   "dockerComposeFile": [
     "../docker-compose.yml"
   ],
-  "service": "devcontainer",
+  "service": "backend",                            // Match the service name in your docker-compose.yml
   "workspaceFolder": "/workspaces/tailstorm",
-  "postCreateCommand": "pip install -r requirements.txt && cd client && npm install",
-  "forwardPorts": [8000, 3000, 5432],
+  "postCreateCommand": "./start-local.sh",         // Custom script to run both frontend/backend locally
+  "forwardPorts": [8000, 3000],
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.11"
@@ -27,6 +27,5 @@
         "dbaeumer.vscode-eslint"
       ]
     }
-  },
-  "remoteUser": "vscode"
+  }
 }

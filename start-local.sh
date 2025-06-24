@@ -1,19 +1,21 @@
 #!/bin/bash
 
-# Shut down any previous containers/volumes
+echo "🛑 Shutting down previous containers and volumes..."
 docker compose down -v
 
-# Rebuild without cache
+echo "🔁 Rebuilding containers without cache..."
 docker compose build --no-cache
 
-# Start Docker Compose in the background
-docker compose up &
+echo "🚀 Starting containers in the background..."
+docker compose up -d
 
-# Wait a few seconds for the server to start
+# Wait for services to initialize
 sleep 5
 
-# Open the browser (Linux + Chrome)
-xdg-open http://localhost:8000
+# Codespaces note: `xdg-open` may not work; print URL instead
+APP_URL="http://localhost:8000"
+echo "🌐 Your app should be live at: $APP_URL"
 
-# Optional: tail logs (remove if you want clean terminal)
+# Tail logs (optional, can be removed if needed)
+echo "📜 Streaming container logs:"
 docker compose logs -f
