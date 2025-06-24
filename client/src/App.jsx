@@ -1,13 +1,14 @@
 import { Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
 import { Suspense, lazy } from 'react';
-import Landing from './pages/Landing';
+import Navbar from './components/Navbar';
 
 // Lazy-loaded pages
+const Landing = lazy(() => import('./pages/Landing'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Logout = lazy(() => import('./pages/Logout'));
+const HowItWorks = lazy(() => import('./pages/HowItWorks')); // ✅ New page
 const ProtectedRoute = lazy(() => import('./components/ProtectedRoute'));
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/how-it-works" element={<HowItWorks />} /> {/* ✅ Added route */}
           <Route
             path="/dashboard"
             element={

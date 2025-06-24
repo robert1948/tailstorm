@@ -1,5 +1,4 @@
 import { useState } from "react";
-import MainLayout from "../components/layout/MainLayout";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -34,36 +33,42 @@ export default function Register() {
   };
 
   return (
-    <MainLayout>
-      <div className="max-w-md mx-auto mt-12 bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4 text-center">Register</h2>
+    <section className="max-w-md mx-auto mt-16 p-6 bg-white rounded-lg shadow">
+      <h2 className="text-2xl font-semibold text-center mb-4">Register</h2>
 
-        {error && <p className="text-red-600 text-sm mb-4 text-center">{error}</p>}
-        {success && <p className="text-green-600 text-sm mb-4 text-center">{success}</p>}
+      {error && <p className="text-red-600 text-sm mb-4 text-center">{error}</p>}
+      {success && <p className="text-green-600 text-sm mb-4 text-center">{success}</p>}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <label className="block">
+          <span className="sr-only">Email</span>
           <input
             type="email"
             placeholder="Email"
             className="w-full p-2 border rounded"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
+        </label>
+        <label className="block">
+          <span className="sr-only">Password</span>
           <input
             type="password"
             placeholder="Password"
             className="w-full p-2 border rounded"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-          >
-            Register
-          </button>
-        </form>
-      </div>
-    </MainLayout>
+        </label>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
+        >
+          Register
+        </button>
+      </form>
+    </section>
   );
 }
