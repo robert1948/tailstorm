@@ -3,7 +3,7 @@ from pydantic import Field, field_validator
 from typing import List
 
 class Settings(BaseSettings):
-    project_name: str = Field("Tailstorm", alias="PROJECT_NAME")  # ← Add this line
+    project_name: str = Field("Tailstorm", alias="PROJECT_NAME")
     postgres_db: str = Field(..., alias="POSTGRES_DB")
     postgres_user: str = Field(..., alias="POSTGRES_USER")
     postgres_password: str = Field(..., alias="POSTGRES_PASSWORD")
