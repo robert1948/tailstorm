@@ -1,40 +1,25 @@
-import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
+import os
 
-app = FastAPI(title=settings.project_name)
+app = FastAPI()
 
-# Allow CORS (adjust as needed)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Built frontend path
+# ✅ Absolute path to static build output (Docker copies frontend here)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../../client/dist"))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+INDEX_HTML = os.path.join(STATIC_DIR, "index.html")
+ASSETS_DIR = os.path.join(STATIC_DIR, "assets")
 
-if not os.path.exists(FRONTEND_DIR):
-    raise RuntimeError(f"Missing frontend build directory: {FRONTEND_DIR}")
+# ✅ Optional: Gracefully warn if frontend is missing (for local dev)
+if not os.path.exists(INDEX_HTML):
+    raise RuntimeError(f"❌ Missing frontend build: {INDEX_HTML}. Run `npm run build` in client/.")
 
-# Mount static files
-app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIR, "assets")), name="assets")
+# ✅ Mount static assets (e.g., JS/CSS/images)
+if os.path.isdir(ASSETS_DIR):
+    app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
 
-# Root route
-@app.get("/")
-def serve_index():
-    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
-
-# Catch-all for SPA routes
-@app.get("/{path:path}")
-def catch_all(path: str):
-    full_path = os.path.join(FRONTEND_DIR, path)
-    if os.path.exists(full_path) and os.path.isfile(full_path):
-        return FileResponse(full_path)
-    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
+# ✅ Serve React SPA for any path
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str, request: Request):
+    return FileResponse(INDEX_HTML)
