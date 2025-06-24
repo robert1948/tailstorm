@@ -1,13 +1,13 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from app.config import settings  # Make sure this is correctly pointing to your Settings
 import os
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from app.config import settings
 
 app = FastAPI(title=settings.project_name)
 
-# CORS middleware
+# Allow CORS (adjust as needed)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -16,21 +16,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Path to frontend build
-frontend_dist_path = os.path.join(os.path.dirname(__file__), "../../client/dist")
+# Built frontend path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../../client/dist"))
 
-# Mount static files (e.g., /assets/index.js)
-app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dist_path, "assets")), name="assets")
+if not os.path.exists(FRONTEND_DIR):
+    raise RuntimeError(f"Missing frontend build directory: {FRONTEND_DIR}")
 
-# Serve index.html at root
+# Mount static files
+app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIR, "assets")), name="assets")
+
+# Root route
 @app.get("/")
-def serve_frontend():
-    return FileResponse(os.path.join(frontend_dist_path, "index.html"))
+def serve_index():
+    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
 
-# Catch-all to support client-side routing (e.g. /dashboard)
-@app.get("/{full_path:path}")
-def serve_spa(full_path: str):
-    file_path = os.path.join(frontend_dist_path, full_path)
-    if os.path.isfile(file_path):
-        return FileResponse(file_path)
-    return FileResponse(os.path.join(frontend_dist_path, "index.html"))
+# Catch-all for SPA routes
+@app.get("/{path:path}")
+def catch_all(path: str):
+    full_path = os.path.join(FRONTEND_DIR, path)
+    if os.path.exists(full_path) and os.path.isfile(full_path):
+        return FileResponse(full_path)
+    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
