@@ -11,7 +11,8 @@ from app.config import settings
 # Load environment variables from .env
 load_dotenv()
 
-app = FastAPI(title=settings.PROJECT_NAME)
+app = FastAPI(title=settings.project_name)
+
 
 # CORS middleware
 app.add_middleware(
